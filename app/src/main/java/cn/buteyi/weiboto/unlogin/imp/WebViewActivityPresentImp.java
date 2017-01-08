@@ -3,6 +3,9 @@ package cn.buteyi.weiboto.unlogin.imp;
 import android.content.Context;
 import android.util.Log;
 
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+
+import cn.buteyi.weiboto.common.AccessTokenKeeper;
 import cn.buteyi.weiboto.unlogin.WebViewActivityPresent;
 import cn.buteyi.weiboto.unlogin.WebViewActivityView;
 
@@ -36,8 +39,24 @@ public class WebViewActivityPresentImp implements WebViewActivityPresent {
             }
 
             Log.d("uid=", uid);
+            Oauth2AccessToken mAccessToken = new Oauth2AccessToken();
+            mAccessToken.setToken(token);
+            mAccessToken.setExpiresIn(expiresIn);
+            mAccessToken.setRefreshToken(refresh_token);
+            mAccessToken.setUid(uid);
+            AccessTokenKeeper.writeAccessToken(context, mAccessToken);
+            Log.d("buteyi", String.valueOf(mAccessToken));
 
             mWebViewActivityView.startMainActivity();
         }
     }
 }
+
+//    public void updateAccessToken(Context context, String token, String expiresIn, String refresh_token, String uid) {
+//        Oauth2AccessToken mAccessToken = new Oauth2AccessToken();
+//        mAccessToken.setToken(token);
+//        mAccessToken.setExpiresIn(expiresIn);
+//        mAccessToken.setRefreshToken(refresh_token);
+//        mAccessToken.setUid(uid);
+//        AccessTokenKeeper.writeAccessToken(context, mAccessToken);
+//    }

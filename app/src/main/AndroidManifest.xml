@@ -26,9 +26,13 @@
         <activity android:name=".unlogin.UnloginActivity" />
         <activity android:name=".login.PostActivity" />
         <activity android:name=".login.MainActivity" />
-        <activity android:name=".unlogin.WebViewActivity"></activity>
-
-
+        <activity android:name=".unlogin.WebViewActivity" />
+        <activity
+            android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
+            android:configChanges="keyboardHidden|orientation"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity android:name=".login.activity.RepostActivity"></activity>
     </application>
 
 </manifest>

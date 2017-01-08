@@ -24,12 +24,12 @@
         "source": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_login_with_account_text_pressed.png"
     },
     {
-        "merged": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_button_blue_normal.9.png",
-        "source": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_button_blue_normal.9.png"
-    },
-    {
         "merged": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_login_with_account_text_normal.png",
         "source": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_login_with_account_text_normal.png"
+    },
+    {
+        "merged": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_button_blue_normal.9.png",
+        "source": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_button_blue_normal.9.png"
     },
     {
         "merged": "/Users/john/StudioProjects/weiboTo/weiboSDK/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ic_com_sina_weibo_sdk_button_grey_pressed.9.png",

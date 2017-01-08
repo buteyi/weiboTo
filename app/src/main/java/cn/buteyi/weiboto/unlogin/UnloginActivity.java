@@ -1,17 +1,21 @@
 package cn.buteyi.weiboto.unlogin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import cn.buteyi.weiboto.R;
+import cn.buteyi.weiboto.common.Constants;
 import cn.buteyi.weiboto.unlogin.fragment.DiscoverFragment;
 import cn.buteyi.weiboto.unlogin.fragment.HomeFragment;
 import cn.buteyi.weiboto.unlogin.fragment.MessageFragment;
@@ -168,5 +172,26 @@ public class UnloginActivity extends AppCompatActivity {
                 setTabFragment(PROFILE_FRAGMENT);
             }
         });
+    }
+
+    //设置各个界面上的 登录,注册 按钮的点击事件
+    /*
+    *public static final String authurl = "https://open.weibo.cn/oauth2/authorize" + "?" + "client_id=" + Constants.APP_KEY
+            + "&response_type=token&redirect_uri=" + Constants.REDIRECT_URL
+            + "&key_hash=" + Constants.AppSecret + (TextUtils.isEmpty(Constants.PackageName) ? "" : "&packagename=" + Constants.PackageName)
+            + "&display=mobile" + "&scope=" + Constants.SCOPE;
+     */
+
+    public void openLoginWebView(View view) {
+        String authurl = "https://open.weibo.cn/oauth2/authorize" + "?" + "client_id=" + Constants.APP_KEY
+                + "&response_type=token&redirect_uri=" + Constants.REDIRECT_URL
+                + "&key_hash=" + Constants.AppSecret + (TextUtils.isEmpty(Constants.PackageName) ? "" : "&packagename=" + Constants.PackageName)
+                + "&display=mobile" + "&scope=" + Constants.SCOPE;
+        Log.d("URL",authurl);
+
+        Intent intent = new Intent(mContext, WebViewActivity.class);
+        intent.putExtra("url", authurl);
+        startActivity(intent);
+        finish();
     }
 }
