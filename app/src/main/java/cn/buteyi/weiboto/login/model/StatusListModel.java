@@ -1,50 +1,20 @@
 package cn.buteyi.weiboto.login.model;
 
-import android.content.Context;
-import cn.buteyi.weiboto.entities.Status;
-import cn.buteyi.weiboto.entities.StatusList;
 
-import java.util.ArrayList;
+import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
+import java.util.List;
 
 /**
  * Created by john on 2017/1/7.
  */
 
 public interface StatusListModel {
+    interface  CompleteListener{
 
-    interface OnDataFinishedListener {
-        void noMoreData();
-
-        void noDataInFirstLoad(String error);
-
-        void onDataFinish(ArrayList<Status> statuslist);
-
-        void onError(String error);
+        void onSuccess(List<StatusEntity> list);
     }
 
-    interface OnRequestListener {
-        void onSuccess();
-
-        void onError(String error);
-    }
-
-    public void timeline(long groundId, Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void friendsTimeline(Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void bilateralTimeline(Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void weibo_destroy(long id, Context context, OnRequestListener onRequestListener);
-
-    public void friendsTimelineNextPage(Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void bilateralTimelineNextPage(Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void timelineNextPage(long groundId, Context context, OnDataFinishedListener onDataFinishedListener);
-
-    public void setRefrshFriendsTimelineTask();
-
-    public void cancelTimer();
+    public void setData();
 
 
 }

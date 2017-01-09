@@ -1,6 +1,7 @@
 package cn.buteyi.weiboto.login;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import cn.buteyi.weiboto.R;
 import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
+import cn.buteyi.weiboto.login.activity.ArticleCommentActivity;
 import cn.buteyi.weiboto.login.adapters.HomepageListAdapter;
 import cn.buteyi.weiboto.login.presenter.HomePresenter;
 import cn.buteyi.weiboto.login.presenter.imp.HomePresenterImp;
@@ -73,9 +75,9 @@ public class HomeFragment extends BaseFragment implements HomeView {
         });
         mListAdapter.setOnItemClickListener(new HomepageListAdapter.OnItemClickListener() {
             public void onItemClick(View v, int position) {
-//                Intent intent = new Intent(getActivity(), ArticleCommentActivity.class);
-//                intent.putExtra(StatusEntity.class.getSimpleName(),mList.get(position));
-//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), ArticleCommentActivity.class);
+                intent.putExtra(StatusEntity.class.getSimpleName(),mList.get(position));
+                startActivity(intent);
 
             }
         });

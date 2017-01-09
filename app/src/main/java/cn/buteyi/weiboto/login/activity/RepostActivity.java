@@ -20,7 +20,8 @@ import cn.buteyi.weiboto.login.net.ParameterKeySet;
 import cn.buteyi.weiboto.utils.RichTextUtils;
 import cn.buteyi.weiboto.utils.SPUtils;
 
-public class RepostActivity extends BaseActivity {private EditText etContent;
+public class RepostActivity extends BaseActivity {
+    private EditText etContent;
     private long id;
     private String content;
     private String action;

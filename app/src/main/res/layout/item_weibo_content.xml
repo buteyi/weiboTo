@@ -122,12 +122,12 @@
 
         <TextView
             android:drawablePadding="8dp"
-            android:id="@+id/tvLike"
+            android:id="@+id/tvComment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/cw_white"
-            android:drawableLeft="@mipmap/ic_icon_unlike"
+            android:drawableLeft="@mipmap/ic_toolbar_icon_comment"
             android:text="null"/>
 
         <View
@@ -139,12 +139,12 @@
 
         <TextView
             android:drawablePadding="8dp"
-            android:id="@+id/tvComment"
+            android:id="@+id/tvLike"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/cw_white"
-            android:drawableLeft="@mipmap/ic_toolbar_icon_comment"
+            android:drawableLeft="@mipmap/ic_icon_unlike"
             android:text="null"/>
     </LinearLayout>
 </LinearLayout>

@@ -91,8 +91,14 @@ public class StatusesAPI extends AbsOpenAPI {
     public static final String LANGUAGE_CNNAME = "cnname";
     public static final String LANGUAGE_TWNAME = "twname";
 
-    public StatusesAPI(Context context, String appKey, Oauth2AccessToken accessToken) {
+    /**
+     *  要请求的url
+     **/
+    String URL ;
+
+    public StatusesAPI(Context context, String url,String appKey, Oauth2AccessToken accessToken) {
         super(context, appKey, accessToken);
+        this.URL = url;
     }
 
     private static final String SERVER_URL_PRIX = API_SERVER + "/statuses";
@@ -110,7 +116,7 @@ public class StatusesAPI extends AbsOpenAPI {
         params.put("count", count);
         params.put("page", page);
         params.put("base_app", base_app ? 1 : 0);
-        requestAsync(SERVER_URL_PRIX + "/public_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -133,7 +139,7 @@ public class StatusesAPI extends AbsOpenAPI {
     public void friendsTimeline(long since_id, long max_id, int count, int page, boolean base_app, int featureType,
                                 boolean trim_user, RequestListener listener) {
         WeiboParameters params = buildTimeLineWithAppTrim(since_id, max_id, count, page, base_app, trim_user, featureType);
-        requestAsync(SERVER_URL_PRIX + "/friends_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -155,7 +161,7 @@ public class StatusesAPI extends AbsOpenAPI {
     public void friendsTimelineIds(long since_id, long max_id, int count, int page, boolean base_app, int featureType,
                                    RequestListener listener) {
         WeiboParameters params = buildTimeLineWithApp(since_id, max_id, count, page, base_app, featureType);
-        requestAsync(SERVER_URL_PRIX + "/friends_timeline/ids.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -179,7 +185,7 @@ public class StatusesAPI extends AbsOpenAPI {
                              boolean trim_user, RequestListener listener) {
         WeiboParameters params = buildTimeLineWithAppTrim(since_id, max_id, count, page, base_app, trim_user,
                 featureType);
-        requestAsync(SERVER_URL_PRIX + "/home_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -205,7 +211,7 @@ public class StatusesAPI extends AbsOpenAPI {
         WeiboParameters params = buildTimeLineWithAppTrim(since_id, max_id, count, page, base_app, trim_user,
                 featureType);
         params.put("uid", uid);
-        requestAsync(SERVER_URL_PRIX + "/user_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -231,7 +237,7 @@ public class StatusesAPI extends AbsOpenAPI {
         WeiboParameters params = buildTimeLineWithAppTrim(since_id, max_id, count, page, base_app, trim_user,
                 featureType);
         params.put("screen_name", screen_name);
-        requestAsync(SERVER_URL_PRIX + "/user_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -255,7 +261,7 @@ public class StatusesAPI extends AbsOpenAPI {
                              boolean trim_user, RequestListener listener) {
         WeiboParameters params = buildTimeLineWithAppTrim(since_id, max_id, count, page, base_app, trim_user,
                 featureType);
-        requestAsync(SERVER_URL_PRIX + "/user_timeline.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -279,7 +285,7 @@ public class StatusesAPI extends AbsOpenAPI {
                                 int featureType, RequestListener listener) {
         WeiboParameters params = buildTimeLineWithApp(since_id, max_id, count, page, base_app, featureType);
         params.put("uid", uid);
-        requestAsync(SERVER_URL_PRIX + "/user_timeline/ids.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**
@@ -303,7 +309,7 @@ public class StatusesAPI extends AbsOpenAPI {
                                 int featureType, RequestListener listener) {
         WeiboParameters params = buildTimeLineWithApp(since_id, max_id, count, page, base_app, featureType);
         params.put("screen_name", screen_name);
-        requestAsync(SERVER_URL_PRIX + "/user_timeline/ids.json", params, HTTPMETHOD_GET, listener);
+        requestAsync(URL, params, HTTPMETHOD_GET, listener);
     }
 
     /**

@@ -2,13 +2,21 @@ package cn.buteyi.weiboto.login.model.imp;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,9 +24,11 @@ import cn.buteyi.weiboto.api.GroupAPI;
 import cn.buteyi.weiboto.api.StatusesAPI;
 import cn.buteyi.weiboto.common.AccessTokenKeeper;
 import cn.buteyi.weiboto.common.Constants;
+import cn.buteyi.weiboto.common.HttpResponse;
 import cn.buteyi.weiboto.common.NewFeature;
 import cn.buteyi.weiboto.entities.Status;
 import cn.buteyi.weiboto.entities.StatusList;
+import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
 import cn.buteyi.weiboto.login.model.StatusListModel;
 import cn.buteyi.weiboto.utils.ToastUtil;
 
@@ -27,264 +37,89 @@ import cn.buteyi.weiboto.utils.ToastUtil;
  */
 
 public class StatusListModelImp implements StatusListModel {
-
-    /**
-     * 全局刷新的间隔时间
-     */
-    private static int REFRESH_FRIENDS_TIMELINE_TASK = 15 * 60 * 1000;
-    private ArrayList<Status> mStatusList = new ArrayList<>();
     private Context mContext;
-    private OnDataFinishedListener mOnDataFinishedUIListener;
-    private OnRequestListener mOnDestroyWeiBoUIListener;
-    private Timer mTimer;
-    private TimerTask mTimerTask;
-    /**
-     * 当前的分组位置
-     */
-    private long mCurrentGroup = Constants.GROUP_TYPE_ALL;
-    /**
-     * 是否全局刷新
-     */
-    private boolean mRefrshAll = true;
+    private String URL;
+    private String appKey;
+    private Oauth2AccessToken accessToken;
+    private CompleteListener completeListener;
+    private List<StatusEntity> mEntityList;
 
 
-    /**
-     * 获取当前登录用户及其所关注用户的最新微博。
-     *
-     * @param context
-     * @param onDataFinishedListener
-     */
-    @Override
-    public void friendsTimeline(Context context, OnDataFinishedListener onDataFinishedListener) {
-        StatusesAPI mStatusesAPI = new StatusesAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        setRefrshFriendsTimelineTask();
+    public StatusListModelImp(Context context, String url, CompleteListener completeListener){
         mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        long sinceId = checkout(Constants.GROUP_TYPE_ALL);
-        mStatusesAPI.homeTimeline(sinceId, 0, NewFeature.GET_WEIBO_NUMS, 1, false, 0, false, pullToRefreshListener);
-    }
-
-
-    /**
-     * 获取双向关注用户的最新微博。
-     *
-     * @param context
-     * @param onDataFinishedListener
-     */
-    @Override
-    public void bilateralTimeline(Context context, OnDataFinishedListener onDataFinishedListener) {
-        StatusesAPI mStatusesAPI = new StatusesAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        setRefrshFriendsTimelineTask();
-        mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        long sinceId = checkout(Constants.GROUP_TYPE_FRIENDS_CIRCLE);
-        mStatusesAPI.bilateralTimeline(sinceId, 0, NewFeature.GET_WEIBO_NUMS, 1, false, StatusesAPI.FEATURE_ORIGINAL, false, pullToRefreshListener);
+        URL = url;
+        appKey = Constants.APP_KEY;
+        accessToken = AccessTokenKeeper.readAccessToken(mContext);
+        this.completeListener = completeListener;
+        mEntityList = new ArrayList<>();
     }
 
     @Override
-    public void timeline(long newGroupId, Context context, OnDataFinishedListener onDataFinishedListener) {
-        GroupAPI groupAPI = new GroupAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        setRefrshFriendsTimelineTask();
-        mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        long sinceId = checkout(newGroupId);
-        groupAPI.timeline(newGroupId, sinceId, 0, NewFeature.GET_WEIBO_NUMS, 1, false, GroupAPI.FEATURE_ALL, pullToRefreshListener);
-    }
+    public void setData(){
+        /**
+         * homeTimeline 参数。
+         *
+         * @param since_id    若指定此参数，则返回ID比since_id大的微博（即比since_id时间晚的微博），默认为0
+         * @param max_id      若指定此参数，则返回ID小于或等于max_id的微博，默认为0
+         * @param count       单页返回的记录条数，默认为50
+         * @param page        返回结果的页码，默认为1
+         * @param base_app    是否只获取当前应用的数据。false为否（所有数据），true为是（仅当前应用），默认为false
+         * @param featureType 过滤类型ID，0：全部、1：原创、2：图片、3：视频、4：音乐，默认为0
+         *                    <li> {@link #FEATURE_ALL}
+         *                    <li> {@link #FEATURE_ORIGINAL}
+         *                    <li> {@link #FEATURE_PICTURE}
+         *                    <li> {@link #FEATURE_VIDEO}
+         *                    <li> {@link #FEATURE_MUSICE}
+         * @param trim_user   返回值中user字段开关，false：返回完整user字段、true：user字段仅返回user_id，默认为false
+         * @param listener    异步请求回调接口
+         */
 
+        final List<StatusEntity> entityList = new ArrayList<>();
+        StatusesAPI statusesAPI = new StatusesAPI(mContext, URL,appKey, accessToken);
+        statusesAPI.homeTimeline(0, 0, 50, 1, false, 0, false, new RequestListener() {
+            public void onComplete(String s) {
+                Log.d("buteyi", s);
+                HttpResponse response = new HttpResponse();
+                JsonParser parser = new JsonParser();
 
-    /**
-     * 删除一条微博
-     *
-     * @param id
-     * @param context
-     * @param onRequestListener
-     */
-    @Override
-    public void weibo_destroy(long id, Context context, OnRequestListener onRequestListener) {
-        StatusesAPI mStatusesAPI = new StatusesAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        mContext = context;
-        mOnDestroyWeiBoUIListener = onRequestListener;
-        mStatusesAPI.destroy(id, destroyRequestListener);
-    }
+                JsonElement element = parser.parse(s);
+                if (element.isJsonObject()) {
+                    JsonObject object = element.getAsJsonObject();
+                    if (object.has("error_code")) {
+                        response.code = object.get("error_code").getAsInt();
+                    }
+                    if ((object.has("error"))) {
+                        response.message = object.get("error").getAsString();
+                    }
+                    if (object.has("statuses")) {
+                        response.response = object.get("statuses").toString();
 
+                    } else if (object.has("users")) {
+                        response.response = object.get("users").toString();
 
-    /**
-     * 获取指定分组的下一页微博
-     *
-     * @param groundId
-     * @param context
-     * @param onDataFinishedListener
-     */
-    @Override
-    public void timelineNextPage(long groundId, Context context, OnDataFinishedListener onDataFinishedListener) {
-        GroupAPI groupAPI = new GroupAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        setRefrshFriendsTimelineTask();
-        String maxId = mStatusList.get(mStatusList.size() - 1).id;
-        groupAPI.timeline(groundId, 0, Long.valueOf(maxId), NewFeature.GET_WEIBO_NUMS, 1, false, GroupAPI.FEATURE_ALL, nextPageListener);
-    }
+                    } else if (object.has("comments")) {
+                        response.response = object.get("comments").toString();
 
-    /**
-     * 获取我关注的人的下一页微博
-     *
-     * @param context
-     * @param onDataFinishedListener
-     */
-    @Override
-    public void friendsTimelineNextPage(Context context, OnDataFinishedListener onDataFinishedListener) {
-        setRefrshFriendsTimelineTask();
-        mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        StatusesAPI mStatusesAPI = new StatusesAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        String maxId = mStatusList.get(mStatusList.size() - 1).id;
-        mStatusesAPI.homeTimeline(0, Long.valueOf(maxId), NewFeature.LOADMORE_WEIBO_ITEM, 1, false, 0, false, nextPageListener);
-    }
-
-
-    /**
-     * 获取相互关注的人的下一页微博
-     *
-     * @param context
-     * @param onDataFinishedListener
-     */
-    @Override
-    public void bilateralTimelineNextPage(Context context, OnDataFinishedListener onDataFinishedListener) {
-        setRefrshFriendsTimelineTask();
-        mContext = context;
-        mOnDataFinishedUIListener = onDataFinishedListener;
-        StatusesAPI mStatusesAPI = new StatusesAPI(context, Constants.APP_KEY, AccessTokenKeeper.readAccessToken(context));
-        String maxId = mStatusList.get(mStatusList.size() - 1).id;
-        mStatusesAPI.bilateralTimeline(0, Long.valueOf(maxId), NewFeature.LOADMORE_WEIBO_ITEM, 1, false, StatusesAPI.FEATURE_ORIGINAL, false, nextPageListener);
-    }
-
-
-    @Override
-    public void setRefrshFriendsTimelineTask() {
-        if (mTimerTask == null) {
-            mTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    mRefrshAll = true;
+                    } else {
+                        response.response = s;
+                    }
                 }
-            };
-            mTimer = new Timer();
-            mTimer.schedule(mTimerTask, 0, REFRESH_FRIENDS_TIMELINE_TASK);
-        }
-    }
+                //填充微博数据
+                Type type = new TypeToken<ArrayList<StatusEntity>>() {
+                }.getType();
+                List<StatusEntity> list = new Gson().fromJson(response.response, type);
 
-    @Override
-    public void cancelTimer() {
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
-        }
-        if (mTimerTask != null) {
-            mTimerTask.cancel();
-            mTimerTask = null;
-        }
-    }
-
-    /**
-     * 用于更新sinceId和maxId的值
-     *
-     * @param newGroupId
-     * @return
-     */
-    private long checkout(long newGroupId) {
-        long sinceId = 0;
-        if (mCurrentGroup != newGroupId) {
-            mRefrshAll = true;
-        }
-        if (mStatusList.size() > 0 && mCurrentGroup == newGroupId && mRefrshAll == false) {
-            sinceId = Long.valueOf(mStatusList.get(0).id);
-        }
-        if (mRefrshAll) {
-            sinceId = 0;
-        }
-        mCurrentGroup = newGroupId;
-        return sinceId;
-    }
-
-
-    private RequestListener pullToRefreshListener = new RequestListener() {
-        @Override
-        public void onComplete(String response) {
-            StatusList statusList = StatusList.parse(response);
-            ArrayList<Status> temp = statusList.statuses;
-            if (temp != null && temp.size() > 0) {
-                //请求回来的数据的maxid与列表中的第一条的id相同，说明是局部刷新，否则是全局刷新
-                ToastUtil.showShort(mContext, temp.size()+ "条新微博");
-
-                //如果是全局刷新,需要清空列表中的全部微博
-                if (mStatusList.size() == 0 || !String.valueOf(statusList.max_id).equals(mStatusList.get(0).id)) {
-                    mStatusList.clear();
-                    mStatusList = temp;
-                } else {
-                    //如果是局部刷新
-                    mStatusList.addAll(0, temp);
-                    //更新对象并且序列化到本地
-                    statusList.statuses = mStatusList;
-                }
-                mOnDataFinishedUIListener.onDataFinish(mStatusList);
-                mRefrshAll = false;
-            } else {
-                if (mRefrshAll == false) {//局部刷新，get不到数据
-                    ToastUtil.showShort(mContext, "0条新微博");
-                    mOnDataFinishedUIListener.noMoreData();
-                } else {//全局刷新，get不到数据
-                    mOnDataFinishedUIListener.noDataInFirstLoad("你还没有为此组增加成员");
-                }
+                mEntityList.addAll(list);
+                completeListener.onSuccess(mEntityList);
+                Log.d("buteyi","在statusListModelImp里");
             }
-            mRefrshAll = false;
-        }
 
-        @Override
-        public void onWeiboException(WeiboException e) {
-            ToastUtil.showShort(mContext, e.getMessage());
-            mOnDataFinishedUIListener.onError(e.getMessage());
-        }
-    };
+            @Override
+            public void onWeiboException(WeiboException e) {
 
-
-    private RequestListener nextPageListener = new RequestListener() {
-        @Override
-        public void onComplete(String response) {
-            if (!TextUtils.isEmpty(response)) {
-                ArrayList<Status> temp = (ArrayList<Status>) StatusList.parse(response).statuses;
-                if (temp.size() == 0 || (temp != null && temp.size() == 1 && temp.get(0).id.equals(mStatusList.get(mStatusList.size() - 1).id))) {
-                    mOnDataFinishedUIListener.noMoreData();
-                } else if (temp.size() > 1) {
-                    temp.remove(0);
-                    mStatusList.addAll(temp);
-                    mOnDataFinishedUIListener.onDataFinish(mStatusList);
-                }
-            } else {
-                mOnDataFinishedUIListener.noMoreData();
             }
-        }
 
-        @Override
-        public void onWeiboException(WeiboException e) {
-            ToastUtil.showShort(mContext, e.getMessage());
-            mOnDataFinishedUIListener.onError(e.getMessage());
-        }
-    };
+        });
+    }
 
-
-    private RequestListener destroyRequestListener = new RequestListener() {
-        @Override
-        public void onComplete(String s) {
-            ToastUtil.showShort(mContext, "微博删除成功");
-            NewFeature.refresh_profileLayout = true;
-            mOnDestroyWeiBoUIListener.onSuccess();
-        }
-
-        @Override
-        public void onWeiboException(WeiboException e) {
-            ToastUtil.showShort(mContext, "微博删除失败");
-            ToastUtil.showShort(mContext, e.toString());
-            mOnDestroyWeiBoUIListener.onError(e.toString());
-        }
-    };
 }

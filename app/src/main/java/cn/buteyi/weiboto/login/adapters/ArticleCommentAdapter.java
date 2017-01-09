@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import cn.buteyi.weiboto.R;
+import cn.buteyi.weiboto.entities.newEntity.CommentEntity;
 import cn.buteyi.weiboto.entities.newEntity.PicUrlsEntity;
 import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
 import cn.buteyi.weiboto.login.activity.PhotoViewActivity;
@@ -27,28 +28,39 @@ import cn.buteyi.weiboto.utils.RichTextUtils;
 import cn.buteyi.weiboto.utils.TimeFormatUtils;
 
 /**
- * Created by john on 2017/1/7.
+ * Created by john on 2017/1/9.
  */
 
-public class HomepageListAdapter extends RecyclerView.Adapter {
-    private List<StatusEntity> mDataSet;
-    private OnItemClickListener mOnItemClickListener;
+public class ArticleCommentAdapter extends RecyclerView.Adapter { private final static int VIEW_TYPE_HEADER = 0;
+    private final static int VIEW_TYPE_ITEM = 1;
+    private List<CommentEntity> mList;
     private Context mContext;
+    private StatusEntity mStatusEntity;
 
-    public HomepageListAdapter(List<StatusEntity> dataSet, Context context) {
-        mDataSet = dataSet;
+    public ArticleCommentAdapter(Context context, StatusEntity statusEntity, List<CommentEntity> list) {
         mContext = context;
+        mStatusEntity = statusEntity;
+        mList = list;
     }
 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_weibo_content, parent, false);
-        return new HomepageViewHolder(view);
+        RecyclerView.ViewHolder viewHolder = null;
+        View view;
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        if (viewType == VIEW_TYPE_HEADER) {
+            view = layoutInflater.inflate(R.layout.item_weibo_content, parent, false);
+            viewHolder = new HomepageViewHolder(view);
+        } else {
+            view = layoutInflater.inflate(R.layout.item_weibo_comment, parent, false);
+            viewHolder = new CommonViewHolder(view);
+        }
+        return viewHolder;
     }
 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof HomepageViewHolder) {
             HomepageViewHolder homepageViewHolder = (HomepageViewHolder) holder;
-            final StatusEntity entity = mDataSet.get(position);
+            final StatusEntity entity = mStatusEntity;
             homepageViewHolder.tvUserName.setText(entity.user.screen_name);
             homepageViewHolder.tvTime.setText(TimeFormatUtils.parseToYYMMDD(entity.created_at));
             homepageViewHolder.tvContent.setText(RichTextUtils.getRichText(mContext, entity.text));
@@ -68,7 +80,7 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, RepostActivity.class);
                     intent.putExtra(ParameterKeySet.ID, entity.id);
-                    if(null!=reStatus){
+                    if (null != reStatus) {
                         intent.putExtra(ParameterKeySet.STATUS, entity.text);
                     }
                     intent.setAction("REPOST");
@@ -85,34 +97,33 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
             });
 
 
-            if(null!=pics&&pics.size()>0){
+            if (null != pics && pics.size() > 0) {
                 final PicUrlsEntity pic = pics.get(0);
-                pic.original_pic = pic.thumbnail_pic.replace("thumbnail","large");
-                pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail","bmiddle");
+                pic.original_pic = pic.thumbnail_pic.replace("thumbnail", "large");
+                pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail", "bmiddle");
                 homepageViewHolder.ivContent.setVisibility(View.VISIBLE);
                 Glide.with(mContext).load(pic.bmiddle_pic).asBitmap().into(homepageViewHolder.ivContent);
                 homepageViewHolder.ivContent.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         Intent intent = new Intent(mContext, PhotoViewActivity.class);
-                        intent.putExtra(PicUrlsEntity.class.getSimpleName(),pic);
+                        intent.putExtra(PicUrlsEntity.class.getSimpleName(), pic);
                         mContext.startActivity(intent);
                     }
                 });
-            }
-            else {
+            } else {
                 homepageViewHolder.ivContent.setVisibility(View.GONE);
             }
             if (null != reStatus) {
-                String reContent =  "@"+reStatus.user.screen_name+":"+reStatus.text;
+                String reContent = "@" + reStatus.user.screen_name + ":" + reStatus.text;
                 homepageViewHolder.llRe.setVisibility(View.VISIBLE);
-                homepageViewHolder.tvReContent.setText(RichTextUtils.getRichText(mContext,reContent));
+                homepageViewHolder.tvReContent.setText(RichTextUtils.getRichText(mContext, reContent));
                 homepageViewHolder.tvReContent.setMovementMethod(LinkMovementMethod.getInstance());
                 List<PicUrlsEntity> rePics = reStatus.pic_urls;
-                if(null!=rePics&&rePics.size()>0){
+                if (null != rePics && rePics.size() > 0) {
                     final PicUrlsEntity pic = rePics.get(0);
                     homepageViewHolder.ivReContent.setVisibility(View.VISIBLE);
-                    pic.original_pic = pic.thumbnail_pic.replace("thumbnail","large");
-                    pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail","bmiddle");
+                    pic.original_pic = pic.thumbnail_pic.replace("thumbnail", "large");
+                    pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail", "bmiddle");
                     Glide.with(mContext).load(pic.bmiddle_pic).asBitmap().into(homepageViewHolder.ivReContent);
                     homepageViewHolder.ivReContent.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
@@ -121,24 +132,35 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
                             mContext.startActivity(intent);
                         }
                     });
-                }
-                else {
+                } else {
                     homepageViewHolder.ivReContent.setVisibility(View.GONE);
                 }
             } else {
                 homepageViewHolder.llRe.setVisibility(View.GONE);
             }
         }
+        if(holder instanceof CommonViewHolder){
+            CommonViewHolder commonViewHolder = (CommonViewHolder) holder;
+            CommentEntity  commentEntity = mList.get(position-1);
+            Glide.with(mContext).load(commentEntity.user.profile_image_url).into(commonViewHolder.ivHeader);
+            commonViewHolder.tvComment.setText(commentEntity.text);
+            commonViewHolder.tvUserName.setText(commentEntity.user.screen_name);
+            commonViewHolder.tvTime.setText(TimeFormatUtils.parseToYYMMDD(commentEntity.created_at));
+        }
 
 
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mOnItemClickListener = listener;
     }
 
     public int getItemCount() {
-        return mDataSet.size();
+        return mList.size()+1;
+    }
+
+    public int getItemViewType(int position) {
+        return isHeader(position) ? VIEW_TYPE_HEADER : VIEW_TYPE_ITEM;
+    }
+
+    private boolean isHeader(int position) {
+        return position == 0;
     }
 
 
@@ -151,17 +173,11 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
         private TextView tvReContent;
         private LinearLayout llRe;
         private ImageView ivContent, ivReContent;
-        private TextView tvRetween,tvComment,tvLike;
+        private TextView tvRetween, tvComment, tvLike;
+
         public HomepageViewHolder(View itemView) {
             super(itemView);
             initialize(itemView);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onItemClick(v, getLayoutPosition());
-                    }
-                }
-            });
         }
 
         private void initialize(View v) {
@@ -181,8 +197,23 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(View v, int position);
+    class CommonViewHolder extends RecyclerView.ViewHolder {
+        private ImageView ivHeader;
+        private TextView tvUserName;
+        private TextView tvTime;
+        private TextView tvComment;
+
+        public CommonViewHolder(View itemView) {
+            super(itemView);
+            initialize(itemView);
+        }
+
+        private void initialize(View view) {
+
+            ivHeader = (ImageView) view.findViewById(R.id.ivHeader);
+            tvUserName = (TextView) view.findViewById(R.id.tvUserName);
+            tvTime = (TextView) view.findViewById(R.id.tvTime);
+            tvComment = (TextView) view.findViewById(R.id.tvComment);
+        }
     }
 }
-

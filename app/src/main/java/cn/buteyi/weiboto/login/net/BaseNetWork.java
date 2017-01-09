@@ -29,6 +29,7 @@ public abstract class BaseNetWork {
 
     private RequestListener mRequestListener = new RequestListener() {
         public void onComplete(String s) {
+            Log.d("buteyi",s);
             boolean success = false;
             HttpResponse response = new HttpResponse();
             JsonParser parser = new JsonParser();
@@ -67,6 +68,7 @@ public abstract class BaseNetWork {
             HttpResponse response = new HttpResponse();
             response.message = e.getMessage();
             onFinish(response, false);
+            Log.d("buteyi","false");
 
         }
     };
