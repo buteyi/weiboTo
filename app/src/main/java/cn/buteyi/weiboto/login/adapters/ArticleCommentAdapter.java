@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,8 @@ import cn.buteyi.weiboto.utils.TimeFormatUtils;
  * Created by john on 2017/1/9.
  */
 
-public class ArticleCommentAdapter extends RecyclerView.Adapter { private final static int VIEW_TYPE_HEADER = 0;
+public class ArticleCommentAdapter extends RecyclerView.Adapter {
+    private final static int VIEW_TYPE_HEADER = 0;
     private final static int VIEW_TYPE_ITEM = 1;
     private List<CommentEntity> mList;
     private Context mContext;
@@ -62,6 +64,7 @@ public class ArticleCommentAdapter extends RecyclerView.Adapter { private final 
             HomepageViewHolder homepageViewHolder = (HomepageViewHolder) holder;
             final StatusEntity entity = mStatusEntity;
             homepageViewHolder.tvUserName.setText(entity.user.screen_name);
+            Log.d("buteyi","在ArticleCommentAdapter里:"+entity.text);
             homepageViewHolder.tvTime.setText(TimeFormatUtils.parseToYYMMDD(entity.created_at));
             homepageViewHolder.tvContent.setText(RichTextUtils.getRichText(mContext, entity.text));
             homepageViewHolder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());
@@ -148,7 +151,6 @@ public class ArticleCommentAdapter extends RecyclerView.Adapter { private final 
             commonViewHolder.tvTime.setText(TimeFormatUtils.parseToYYMMDD(commentEntity.created_at));
         }
 
-
     }
 
     public int getItemCount() {
@@ -216,4 +218,7 @@ public class ArticleCommentAdapter extends RecyclerView.Adapter { private final 
             tvComment = (TextView) view.findViewById(R.id.tvComment);
         }
     }
+
+
 }
+
