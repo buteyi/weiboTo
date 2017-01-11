@@ -1,9 +1,7 @@
 package cn.buteyi.weiboto.login.model.imp;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -17,20 +15,15 @@ import com.sina.weibo.sdk.net.RequestListener;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import cn.buteyi.weiboto.api.GroupAPI;
 import cn.buteyi.weiboto.api.StatusesAPI;
 import cn.buteyi.weiboto.common.AccessTokenKeeper;
 import cn.buteyi.weiboto.common.Constants;
 import cn.buteyi.weiboto.common.HttpResponse;
-import cn.buteyi.weiboto.common.NewFeature;
-import cn.buteyi.weiboto.entities.Status;
-import cn.buteyi.weiboto.entities.StatusList;
+
 import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
 import cn.buteyi.weiboto.login.model.StatusListModel;
-import cn.buteyi.weiboto.utils.ToastUtil;
+
 
 /**
  * Created by john on 2017/1/7.
@@ -74,44 +67,37 @@ public class StatusListModelImp implements StatusListModel {
          * @param listener    异步请求回调接口
          */
 
-        final List<StatusEntity> entityList = new ArrayList<>();
+
         StatusesAPI statusesAPI = new StatusesAPI(mContext, URL,appKey, accessToken);
         statusesAPI.homeTimeline(0, 0, 50, 1, false, 0, false, new RequestListener() {
             public void onComplete(String s) {
-                Log.d("buteyi", s);
+              //  Log.d("buteyi", s);
                 HttpResponse response = new HttpResponse();
+
                 JsonParser parser = new JsonParser();
 
                 JsonElement element = parser.parse(s);
                 if (element.isJsonObject()) {
                     JsonObject object = element.getAsJsonObject();
-                    if (object.has("error_code")) {
-                        response.code = object.get("error_code").getAsInt();
-                    }
-                    if ((object.has("error"))) {
-                        response.message = object.get("error").getAsString();
-                    }
+
                     if (object.has("statuses")) {
                         response.response = object.get("statuses").toString();
 
-                    } else if (object.has("users")) {
-                        response.response = object.get("users").toString();
-
-                    } else if (object.has("comments")) {
-                        response.response = object.get("comments").toString();
-
-                    } else {
-                        response.response = s;
                     }
+                    Type type = new TypeToken<ArrayList<StatusEntity>>() {
+                    }.getType();
+                    List<StatusEntity> list = new Gson().fromJson(response.response, type);
+                    //Log.d("buteyi","s:"+s);
+                    //Log.d("buteyi","response:"+response.response);
+
+                    mEntityList.addAll(list);
+                    completeListener.onSuccess(mEntityList);
+                    Log.d("buteyi","在statusListModelImp里");
+
+
                 }
                 //填充微博数据
-                Type type = new TypeToken<ArrayList<StatusEntity>>() {
-                }.getType();
-                List<StatusEntity> list = new Gson().fromJson(response.response, type);
 
-                mEntityList.addAll(list);
-                completeListener.onSuccess(mEntityList);
-                Log.d("buteyi","在statusListModelImp里");
             }
 
             @Override
@@ -120,6 +106,9 @@ public class StatusListModelImp implements StatusListModel {
             }
 
         });
+
     }
+
+
 
 }
