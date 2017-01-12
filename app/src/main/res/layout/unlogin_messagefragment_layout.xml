@@ -7,7 +7,7 @@
     <include layout="@layout/toolbar_message_unlogin"/>
 
     <ImageView
-        android:layout_width="248dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="130dp"
         android:background="@mipmap/visitordiscover_image_message"

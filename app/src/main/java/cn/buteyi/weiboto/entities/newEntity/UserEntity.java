@@ -3,11 +3,13 @@ package cn.buteyi.weiboto.entities.newEntity;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by john on 2017/1/9.
  */
 
-public class UserEntity {
+public class UserEntity implements Serializable{
     public long id;
     public String idstr;
     @SerializedName("class")

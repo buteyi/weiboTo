@@ -3,7 +3,7 @@ package cn.buteyi.weiboto.entities.newEntity;
 import java.io.Serializable;
 import java.util.List;
 
-import cn.buteyi.weiboto.entities.User;
+
 
 /**
  * Created by john on 2017/1/7.
@@ -28,7 +28,7 @@ public class StatusEntity implements Serializable {
     public String original_pic;
     public Object geo;
     public List<PicUrlsEntity> pic_urls;
-    public User user;
+    public UserEntity user;
     public StatusEntity retweeted_status;
     public  int  reposts_count;
     public  int  comments_count;

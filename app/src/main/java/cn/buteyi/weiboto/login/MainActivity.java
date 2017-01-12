@@ -1,6 +1,7 @@
 package cn.buteyi.weiboto.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +11,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
+import com.sina.weibo.sdk.openapi.legacy.AccountAPI;
 
 import cn.buteyi.weiboto.R;
 import cn.buteyi.weiboto.common.AccessTokenKeeper;
+import cn.buteyi.weiboto.common.Constants;
 import cn.buteyi.weiboto.utils.ToastUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout mHomeTab, mMessageTab, mDiscoverTab, mProfile;
     private ImageView mPostTab;
 
-    private boolean mComeFromeAccoutActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
         mProfile = (RelativeLayout) findViewById(R.id.tv_profile);
 
         mFragmentManager = getSupportFragmentManager();
-        mComeFromeAccoutActivity = getIntent().getBooleanExtra("comeFromAccoutActivity", false);
         Log.d("buteyi","comeToMainActivity");
 
         setTabFragment(HOME_FRAGMENT);
         setUpListener();
+
     }
 
     //Activity被销毁时,记录当前处于哪个index
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 case HOME_FRAGMENT:
                     mHomeTab.setSelected(true);
                     if (mHomeFragment == null) {
-                       // mHomeFragment = HomeFragment.newInstance(mComeFromeAccoutActivity);
+
                         mHomeFragment = new HomeFragment();
                         mTransaction.add(R.id.contentLayout, mHomeFragment, HOME_FRAGMENT);
 
@@ -158,8 +164,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ToastUtil.showShort(mContext, "发微博");
-                Oauth2AccessToken m = AccessTokenKeeper.readAccessToken(mContext);
-                Log.d("buteyi",String.valueOf(m));
+                Intent intent = new Intent(mContext, PostActivity.class);
+                startActivity(intent);
+
             }
         });
         mDiscoverTab.setOnClickListener(new View.OnClickListener() {
@@ -176,5 +183,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

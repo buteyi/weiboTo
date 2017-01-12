@@ -14,7 +14,7 @@ import cn.buteyi.weiboto.R;
 import cn.buteyi.weiboto.common.AccessTokenKeeper;
 import cn.buteyi.weiboto.login.MainActivity;
 import cn.buteyi.weiboto.unlogin.UnloginActivity;
-import cn.buteyi.weiboto.utils.SPUtils;
+
 
 /**
  * Created by john on 2017/1/1.
@@ -33,7 +33,6 @@ public class WelcomeActivity extends AppCompatActivity {
             Log.d("cuizai","yicunzai");
         }
         if (AccessTokenKeeper.readAccessToken(this).isSessionValid()) {
-//         if (SPUtils.getInstance(this).getToken().isSessionValid())  {
             mStartIntent = new Intent(WelcomeActivity.this, MainActivity.class);
         } else {
             mStartIntent = new Intent(WelcomeActivity.this, UnloginActivity.class);

@@ -31,13 +31,11 @@
             android:name="com.sina.weibo.sdk.component.WeiboSdkBrowser"
             android:configChanges="keyboardHidden|orientation"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"></activity>
-
-        <activity android:name=".login.activity.RepostActivity"></activity>
-        <activity android:name=".login.PostActivity"></activity>
-        <activity android:name=".login.activity.PhotoViewActivity"></activity>
-
-
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".login.activity.RepostActivity" />
+        <activity android:name=".login.activity.PhotoViewActivity" />
+        <activity android:name=".login.activity.ArticleCommentActivity" />
+        <activity android:name=".login.activity.SettingActivity"></activity>
     </application>
 
 </manifest>

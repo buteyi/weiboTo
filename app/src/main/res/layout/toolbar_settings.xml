@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_profile"
+    android:id="@+id/toolbar_message"
     android:layout_width="match_parent"
     android:layout_height="45dp"
+    android:fitsSystemWindows="true"
     android:background="@color/topbar_bg">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/toolbar_back"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
-        android:text="添加朋友"
-        android:textColor="@drawable/toolbar_textview_background_auto"
-        android:textSize="18sp" />
+        android:scaleType="centerCrop"
+        android:src="@mipmap/navigationbar_back" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,25 +22,14 @@
         android:layout_centerInParent="true"
         android:layout_margin="8dp"
         android:gravity="center"
-        android:text="我"
+        android:text="设置"
         android:textColor="@color/topbar_center"
         android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/setting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="8dp"
-        android:text="设置"
-        android:textColor="@drawable/toolbar_textview_background_auto"
-        android:textSize="18sp"
-        />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
         android:background="@color/topbar_bottom_drive" />
+
 </RelativeLayout>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 import cn.buteyi.weiboto.R;
 import cn.buteyi.weiboto.entities.newEntity.PicUrlsEntity;
 import cn.buteyi.weiboto.entities.newEntity.StatusEntity;
+import cn.buteyi.weiboto.login.activity.ArticleCommentActivity;
 import cn.buteyi.weiboto.login.activity.PhotoViewActivity;
 import cn.buteyi.weiboto.login.activity.RepostActivity;
 import cn.buteyi.weiboto.login.net.ParameterKeySet;
@@ -81,6 +83,7 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
                     intent.putExtra(ParameterKeySet.ID, entity.id);
                     intent.setAction("COMMENT");
                     mContext.startActivity(intent);
+                 //   Log.d("buteyi","点击了Comment按钮");
                 }
             });
 
@@ -159,6 +162,7 @@ public class HomepageListAdapter extends RecyclerView.Adapter {
                 public void onClick(View v) {
                     if (mOnItemClickListener != null) {
                         mOnItemClickListener.onItemClick(v, getLayoutPosition());
+                        Log.d("buteyi","click HomepageViewHolder");
                     }
                 }
             });

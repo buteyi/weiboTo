@@ -25,11 +25,13 @@ public class HomePresenterImp implements HomePresenter {
     private HomeView mHomeView;
     private StatusListModel statusListModel;
 
+
     public HomePresenterImp(HomeView homeView) {
         mHomeView = homeView;
         mEntityList = new ArrayList<>();
         mParameters = new WeiboParameters(Constants.APP_KEY);
         statusListModel = new StatusListModelImp(mHomeView.getActivity(),url,completeListener);
+
     }
 
 
@@ -50,7 +52,7 @@ public class HomePresenterImp implements HomePresenter {
 
     public void loadData() {
 
-            statusListModel.setData();
+        statusListModel.setData();
 
     }
 
@@ -58,7 +60,7 @@ public class HomePresenterImp implements HomePresenter {
         @Override
         public void onSuccess(List<StatusEntity> list) {
             mHomeView.onSuccess(list);
-            Log.d("buteyi","zai homePresenterli");
+          //  Log.d("buteyi","zai homePresenterli");
         }
     };
 }

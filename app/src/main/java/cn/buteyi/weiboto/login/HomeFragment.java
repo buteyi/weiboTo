@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +36,12 @@ public class HomeFragment extends BaseFragment implements HomeView {
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.ItemDecoration mItemDecoration;
     private HomePresenter mPresenter;
-    HomepageListAdapter mListAdapter;
+    private HomepageListAdapter mListAdapter;
     List<StatusEntity> mList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // EventBus.getDefault().register(this);
         mPresenter = new HomePresenterImp(this);
         mList = new ArrayList<>();
         mListAdapter = new HomepageListAdapter(mList,getActivity());
@@ -78,35 +78,18 @@ public class HomeFragment extends BaseFragment implements HomeView {
                 Intent intent = new Intent(getActivity(), ArticleCommentActivity.class);
                 intent.putExtra(StatusEntity.class.getSimpleName(),mList.get(position));
                 startActivity(intent);
+                Log.d("buteyi","点击了ItemClick按钮");
+                Log.d("buteyi","HomeFragment中的position:"+position);
+                Log.d("buteyi",mList.get(position).text);
 
             }
         });
     }
 
 
-    public void onEventMainThread(Object event) {
-        if(event instanceof Integer){
-            int id  = (int) event;
-//            switch (id){
-//                case R.id.action_one:
-//                    mPresenter.requestHomeTimeLine();
-//                    break;
-//                case R.id.action_two:
-//                    mPresenter.requestUserTimeLine();
-//                    break;
-//            }
-        }
-
-    }
-
-    public void onDestroy() {
-        super.onDestroy();
-       // EventBus.getDefault().unregister(this);
-    }
-
     public void onSuccess(List<StatusEntity> list) {
         rlv.onRefreshComplete();
-        mList.clear();;
+        mList.clear();
         mList.addAll(list);
         mListAdapter.notifyDataSetChanged();
     }
@@ -114,18 +97,6 @@ public class HomeFragment extends BaseFragment implements HomeView {
     public void onError(String error) {
         rlv.onRefreshComplete();
         Toast.makeText(getActivity(),error,Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * 静态工厂方法需要一个int型的值来初始化fragment的参数，
-     * 然后返回新的fragment到调用者
-     */
-    public static HomeFragment newInstance(boolean comeFromAccoutActivity) {
-        HomeFragment homeFragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putBoolean("comeFromAccoutActivity", comeFromAccoutActivity);
-        homeFragment.setArguments(args);
-        return homeFragment;
     }
 
 

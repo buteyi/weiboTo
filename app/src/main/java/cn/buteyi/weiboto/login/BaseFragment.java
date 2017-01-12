@@ -1,5 +1,7 @@
 package cn.buteyi.weiboto.login;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
@@ -23,4 +25,5 @@ public class BaseFragment extends Fragment{
         getActivity().overridePendingTransition(R.anim.anmi_in_right_left, R.anim.anmi_out_right_left);
 
     }
+
 }

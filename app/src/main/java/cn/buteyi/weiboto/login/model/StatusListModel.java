@@ -14,7 +14,7 @@ public interface StatusListModel {
         void onSuccess(List<StatusEntity> list);
     }
 
-    public void setData();
+     void setData();
 
 
 }
